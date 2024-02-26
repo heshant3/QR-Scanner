@@ -109,7 +109,7 @@ export default function App() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalText}>Scanned Data:</Text>
+            <Text style={styles.modalText}>{scannedData?.data}</Text>
             <Text style={styles.modalData}>{scannedData?.data}</Text>
             <TouchableOpacity onPress={handleCloseModal}>
               <Text style={styles.closeButton}>Close</Text>
@@ -187,9 +187,10 @@ const styles = ScaledSheet.create({
     alignItems: "center",
   },
   modalText: {
-    fontSize: 20,
-    marginBottom: 10,
+    fontSize: "30@ms0.1",
+    marginBottom: 20,
     fontFamily: "Inter_500Medium",
+    color: "#007AFF",
   },
   modalData: {
     fontSize: 16,

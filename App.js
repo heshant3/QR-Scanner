@@ -8,6 +8,7 @@ import {
   StatusBar,
   Modal,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import { Camera } from "expo-camera";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -42,6 +43,7 @@ export default function App() {
   }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {
+    console.log("Scanned type:", type); // Log the type property
     setScanned(true);
     setScannedData({ type, data });
     setShowModal(true);
@@ -109,8 +111,21 @@ export default function App() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalText}>{scannedData?.data}</Text>
-            <Text style={styles.modalData}>{scannedData?.data}</Text>
+            {/* Conditionally render based on the scanned type */}
+            {scannedData?.type == "32" ? (
+              <Text style={styles.modalText}>Barcode</Text>
+            ) : (
+              <Text style={styles.modalText}>QR Code</Text>
+            )}
+            <View style={styles.ModelDataView}>
+              <ScrollView
+                contentContainerStyle={styles.scroll}
+                showsVerticalScrollIndicator={false}
+              >
+                <Text style={styles.modalDataText}> {scannedData?.data}</Text>
+              </ScrollView>
+            </View>
+            {/* <View> </View> */}
             <TouchableOpacity onPress={handleCloseModal}>
               <Text style={styles.closeButton}>Close</Text>
             </TouchableOpacity>
@@ -197,9 +212,29 @@ const styles = ScaledSheet.create({
     marginBottom: 20,
     fontFamily: "Inter_400Regular",
   },
+
+  ModelDataView: {
+    backgroundColor: "#fff",
+    height: "20%",
+    width: "99%",
+    borderRadius: 25,
+    padding: 20,
+    overflow: "hidden",
+  },
+
+  modalDataText: {
+    fontSize: "24@ms0.1",
+    color: "#595959",
+    fontFamily: "Inter_500Medium",
+  },
+
   closeButton: {
     fontSize: 18,
     color: "#007AFF",
     fontFamily: "Inter_500Medium",
+  },
+
+  scroll: {
+    // justifyContent: "center",
   },
 });

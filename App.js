@@ -9,9 +9,16 @@ import {
   Modal,
   TouchableOpacity,
   ScrollView,
+  Linking,
 } from "react-native";
 import { Camera } from "expo-camera";
-import { MaterialIcons } from "@expo/vector-icons";
+import {
+  MaterialIcons,
+  FontAwesome6,
+  MaterialCommunityIcons,
+  AntDesign,
+  FontAwesome5,
+} from "@expo/vector-icons";
 import {
   useFonts,
   Inter_400Regular,
@@ -19,6 +26,8 @@ import {
   Inter_300Light,
 } from "@expo-google-fonts/inter";
 import { ScaledSheet } from "react-native-size-matters";
+import * as Clipboard from "expo-clipboard";
+import { BlurView } from "expo-blur";
 
 export default function App() {
   // Load fonts asynchronously
@@ -35,6 +44,65 @@ export default function App() {
   const [cameraRef, setCameraRef] = useState(null);
   const [torchOn, setTorchOn] = useState(false);
 
+  // Copy function
+  const handleCopyData = () => {
+    if (scannedData?.data) {
+      Clipboard.setString(scannedData.data);
+      alert("Data copied to clipboard!");
+    } else {
+      alert("No data to copy!");
+    }
+  };
+
+  // Search Web Or APP function
+  const handleSearchWeb = () => {
+    if (scannedData?.data) {
+      const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
+      if (urlRegex.test(scannedData.data)) {
+        Linking.openURL(scannedData.data); // If the scanned data is a URL, open it directly
+      } else {
+        const searchQuery = encodeURIComponent(scannedData.data);
+        const searchUrl = `https://www.google.com/search?q=${searchQuery}`;
+        Linking.openURL(searchUrl); // If not a URL, perform a web search
+      }
+    } else {
+      alert("No data to search!");
+    }
+  };
+
+  // Facebook Search function
+  const handleSearchFacebook = () => {
+    if (scannedData?.data) {
+      const searchQuery = encodeURIComponent(scannedData.data);
+      const searchUrl = `https://www.facebook.com/search/top/?q=${searchQuery}`;
+      Linking.openURL(searchUrl);
+    } else {
+      alert("No data to search!");
+    }
+  };
+
+  // Amazon Search function
+  const handleSearchAmazon = () => {
+    if (scannedData?.data) {
+      const searchQuery = encodeURIComponent(scannedData.data);
+      const searchUrl = `https://www.amazon.com/s?k=${searchQuery}`;
+      Linking.openURL(searchUrl);
+    } else {
+      alert("No data to search!");
+    }
+  };
+
+  // Ebay Search function
+  const handleSearchEbay = () => {
+    if (scannedData?.data) {
+      const searchQuery = encodeURIComponent(scannedData.data);
+      const searchUrl = `https://www.ebay.com/sch/i.html?_nkw=${searchQuery}`;
+      Linking.openURL(searchUrl);
+    } else {
+      alert("No data to search!");
+    }
+  };
+
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
@@ -43,7 +111,7 @@ export default function App() {
   }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {
-    console.log("Scanned type:", type); // Log the type property
+    // console.log("Scanned type:", type); // Log the type property
     setScanned(true);
     setScannedData({ type, data });
     setShowModal(true);
@@ -109,7 +177,12 @@ export default function App() {
         visible={showModal}
         onRequestClose={handleCloseModal}
       >
-        <View style={styles.modalContainer}>
+        <BlurView
+          experimentalBlurMethod="dimezisBlurView"
+          intensity={30}
+          tint="systemChromeMaterialDark"
+          style={styles.modalContainer}
+        >
           <View style={styles.modalContent}>
             {/* Conditionally render based on the scanned type */}
             {scannedData?.type == "32" ? (
@@ -125,12 +198,59 @@ export default function App() {
                 <Text style={styles.modalDataText}> {scannedData?.data}</Text>
               </ScrollView>
             </View>
-            {/* <View> </View> */}
-            <TouchableOpacity onPress={handleCloseModal}>
-              <Text style={styles.closeButton}>Close</Text>
-            </TouchableOpacity>
+            <View style={styles.Banner}></View>
+
+            <View style={styles.SearchView}>
+              <View>
+                <Text style={styles.SearchText}>Search on</Text>
+              </View>
+              <View style={styles.SearchBtnView}>
+                <TouchableOpacity
+                  style={styles.bottombtn}
+                  onPress={handleCopyData}
+                >
+                  <FontAwesome6 name="copy" size={30} color="#49A8FF" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.bottombtn}
+                  onPress={handleSearchWeb}
+                >
+                  <MaterialCommunityIcons
+                    name="web"
+                    size={30}
+                    color="#49A8FF"
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.bottombtn}
+                  onPress={handleSearchAmazon}
+                >
+                  <AntDesign name="amazon" size={30} color="#49A8FF" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.bottombtn}
+                  onPress={handleSearchEbay}
+                >
+                  <FontAwesome5 name="ebay" size={30} color="#49A8FF" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.bottombtn}
+                  onPress={handleSearchFacebook}
+                >
+                  <FontAwesome5 name="facebook" size={30} color="#49A8FF" />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View>
+              <TouchableOpacity
+                onPress={handleCloseModal}
+                style={styles.closeButton}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        </BlurView>
       </Modal>
     </SafeAreaView>
   );
@@ -191,11 +311,10 @@ const styles = ScaledSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
     width: "90%",
-    height: "78%",
+    height: "70%",
     backgroundColor: "#E8EEF1",
     padding: 20,
     borderRadius: 30,
@@ -215,7 +334,7 @@ const styles = ScaledSheet.create({
 
   ModelDataView: {
     backgroundColor: "#fff",
-    height: "20%",
+    height: "25%",
     width: "99%",
     borderRadius: 25,
     padding: 20,
@@ -228,7 +347,54 @@ const styles = ScaledSheet.create({
     fontFamily: "Inter_500Medium",
   },
 
+  Banner: {
+    marginVertical: 10,
+    // backgroundColor: "red",
+    height: "20%",
+    width: "100%",
+    borderRadius: 25,
+    overflow: "hidden",
+  },
+
+  SearchView: {
+    width: "100%",
+  },
+
+  SearchText: {
+    fontSize: "24@ms0.1",
+    color: "#595959",
+    fontFamily: "Inter_400Regular",
+  },
+
+  SearchBtnView: {
+    marginTop: 20,
+    flexDirection: "row",
+    overflow: "hidden",
+    justifyContent: "space-between",
+  },
+
+  bottombtn: {
+    height: 55,
+    width: 55,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    marginVertical: 10,
+    // marginLeft: 10,
+  },
+
   closeButton: {
+    marginTop: 50,
+    height: 40,
+    width: 100,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+
+  closeButtonText: {
     fontSize: 18,
     color: "#007AFF",
     fontFamily: "Inter_500Medium",

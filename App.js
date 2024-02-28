@@ -28,6 +28,7 @@ import {
 import { ScaledSheet } from "react-native-size-matters";
 import * as Clipboard from "expo-clipboard";
 import { BlurView } from "expo-blur";
+import LottieView from "lottie-react-native";
 
 export default function App() {
   // Load fonts asynchronously
@@ -156,7 +157,14 @@ export default function App() {
                 : Camera.Constants.FlashMode.off
             }
           >
-            <View style={styles.overlay}></View>
+            <View style={styles.overlay}>
+              <LottieView
+                source={require("./assets/mpaRB0Ibrb.json")} // Change 'animation.json' to your Lottie animation file
+                autoPlay
+                loop
+                style={styles.ScanAni}
+              />
+            </View>
           </Camera>
         </View>
       </View>
@@ -209,7 +217,12 @@ export default function App() {
                   style={styles.bottombtn}
                   onPress={handleCopyData}
                 >
-                  <FontAwesome6 name="copy" size={30} color="#49A8FF" />
+                  <FontAwesome6
+                    name="copy"
+                    color="#49A8FF"
+                    style={styles.Icon}
+                    size={30}
+                  />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.bottombtn}
@@ -281,9 +294,7 @@ const styles = ScaledSheet.create({
     width: "100%",
   },
   overlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    ...StyleSheet.absoluteFillObject,
   },
   bottom: {
     flex: 0.3,
@@ -298,9 +309,14 @@ const styles = ScaledSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
+  ScanAni: {
+    height: "100%",
+  },
+
   Qr: {
-    height: "90%",
-    width: "90%",
+    height: "85%",
+    width: "80%",
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
@@ -314,7 +330,7 @@ const styles = ScaledSheet.create({
   },
   modalContent: {
     width: "90%",
-    height: "70%",
+    height: "600@ms0.2",
     backgroundColor: "#E8EEF1",
     padding: 20,
     borderRadius: 30,
@@ -374,9 +390,9 @@ const styles = ScaledSheet.create({
   },
 
   bottombtn: {
-    height: 55,
-    width: 55,
-    borderRadius: 10,
+    height: "54@ms0.7",
+    width: "54@ms0.7",
+    borderRadius: "10@ms0.7",
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
